@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { fetchMarvelCharacter, fetchMarvelComic } from "../../utils/MarvilApi";
+import { Col, Container, Row } from "react-bootstrap";
 
 const ComicDetail = () => {
   const { resourceURI } = useParams();
@@ -22,8 +23,7 @@ const ComicDetail = () => {
         console.error("Error al obtener los detalles del cómic:", error);
       }
     };
-
-    fetchComic();
+    setTimeout(fetchComic(), 2000);
   }, [resourceURI]);
 
   if (!comic) {
@@ -46,32 +46,53 @@ const ComicDetail = () => {
   const { title, description, thumbnail, characters } = comic;
 
   return (
-    <div>
-      <h1>{title}</h1>
-      <img src={`${thumbnail?.path}.${thumbnail?.extension}`} alt={title} />
-      <p>{description}</p>
+    <Container className="mt-lg-4 mt-md-2 mt-2">
+      <Row>
+        <Col sm={12} md={6} lg={6} xl={6} className="text-center">
+          <img
+            src={`${thumbnail?.path}.${thumbnail?.extension}`}
+            alt={title}
+            className="img-fluid"
+          />
+        </Col>
+        <Col sm={12} md={6} lg={6} xl={6} className="text-center">
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </Col>
+      </Row>
 
-      <h2>Personajes:</h2>
-      {characters.available > 0 ? (
-        <ul>
-          {characters.items.map((character) => (
-            <li key={character.resourceURI}>
-              <Link
-                to={`/detail/${character.resourceURI.split("/").pop()}`}
-                onClick={() =>
-                  handleCharacterClick(character.resourceURI.split("/").pop())
-                }
-              >
-                {character.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No se encontraron personajes disponibles.</p>
-      )}
-      <button onClick={handleGoBack}>Volver</button>
-    </div>
+      <Row>
+        <Col sm={12} md={12} lg={12} xl={12} className="text-center mt-3 mb-3">
+          <h2>Personajes con apareiciones en {title}:</h2>
+        </Col>
+        <Col sm={12} md={12} lg={12} xl={12} className="text-center">
+          {characters.available > 0 ? (
+            <div>
+              {characters.items.map((character) => (
+                <p key={character.resourceURI}>
+                  <Link
+                    to={`/detail/${character.resourceURI.split("/").pop()}`}
+                    onClick={() =>
+                      handleCharacterClick(
+                        character.resourceURI.split("/").pop()
+                      )
+                    }
+                  >
+                    {character.name}
+                  </Link>
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p>No se encontraron personajes disponibles.</p>
+          )}
+        </Col>
+      </Row>
+
+      <Col className="text-center mt-4">
+        <button onClick={handleGoBack}>Volver</button>
+      </Col>
+    </Container>
   );
 };
 
